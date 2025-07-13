@@ -531,7 +531,11 @@ body.dark .switch::before {
     height: 400px;
     position: relative;
     flex: 0 0 400px;
-    min-width: 350px;
+    max-width:  290px;
+    font-size: 0.8em;
+        /* padding: 5px 6px; */
+        /* min-width: 70px; */
+        /* max-width: 120px; */
 }
 
 .chart-box:hover, .chart-box2:hover {
