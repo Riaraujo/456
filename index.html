@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPlatform - Dashboard</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <header>
+            <div class="image-text">
+                <span class="image">
+                    <img src="/6.jpeg" alt="Logo">
+                </span>
+                <div class="text header-text">
+                    <span class="name">EduPlatform</span>
+                    <span class="profession">Sistema de Estudos</span>
+                </div>
+            </div>
+            <i class='bx bx-chevron-right toggle'></i>
+        </header>
+
+        <div class="menu-bar">
+            <div class="menu">
+                <ul class="menu-links">
+                    <li class="nav-link active" data-page="dashboard">
+                        <a href="#" onclick="navigateTo('dashboard')">
+                            <i class='bx bx-home-alt icon'></i>
+                            <span class="text nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-link" data-page="search">
+                        <a href="#" onclick="navigateTo('search')">
+                            <i class='bx bx-search-alt-2 icon'></i>
+                            <span class="text nav-text">Buscar Questões</span>
+                        </a>
+                    </li>
+                    <li class="nav-link" data-page="chat">
+                        <a href="#" onclick="navigateTo('chat')">
+                            <i class='bx bx-chat icon'></i>
+                            <span class="text nav-text">Chat IA</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">
+                            <i class='bx bx-book icon'></i>
+                            <span class="text nav-text">Cadernos</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">
+                            <i class='bx bx-bar-chart-alt-2 icon'></i>
+                            <span class="text nav-text">Estatísticas</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">
+                            <i class='bx bx-cog icon'></i>
+                            <span class="text nav-text">Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bottom-content">
+                <li class="mode">
+                    <div class="moon-sun">
+                        <i class='bx bx-moon icon moon'></i>
+                        <i class='bx bx-sun icon sun'></i>
+                    </div>
+                    <span class="mode-text text">Dark Mode</span>
+                    <div class="toggle-switch" onclick="toggleDarkMode()">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu Topo Fixo -->
+    <nav class="menu-topo">
+        <div class="logo">
+            <div class="buttonlogo">
+                <i class='bx bx-book-open'></i>
+                <span class="logo-text">EduPlatform</span>
+            </div>
+        </div>
+        
+        <div class="menu-center">
+            <h2 id="page-title">Dashboard</h2>
+        </div>
+        
+        <div class="perfil" onclick="toggleProfileModal()">
+            <img src="/6.jpeg" alt="Perfil">
+        </div>
+    </nav>
+
+    <!-- Modal do Perfil -->
+    <div id="profileModal" class="modalPerfil">
+        <div class="modalPerfil-content">
+            <a href="#" onclick="logout()">Sair</a>
+            <a href="#" onclick="editProfile()">Editar Perfil</a>
+            <a href="#" onclick="settings()">Configurações</a>
+        </div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <section class="home">
+        <div id="main-content">
+            <!-- Dashboard Content -->
+            <div id="dashboard-page" class="page-content active">
+                <div class="dashboard-container">
+                    
+                    <!-- Gráficos -->
+                    <div class="chart-grid">
+                        <div class="chart-box">
+                            <div class="chart-header">
+                                <h3>Questões Resolvidas</h3>
+                                <div class="chart-controls">
+                                    <select class="chart-select" id="questionsMateria">
+                                        <option value="todas">Todas as Matérias</option>
+                                        <option value="matematica">Matemática</option>
+                                        <option value="portugues">Português</option>
+                                        <option value="historia">História</option>
+                                        <option value="geografia">Geografia</option>
+                                        <option value="ciencias">Ciências</option>
+                                    </select>
+                                    <div class="date-range-container">
+                                        <input type="text" class="chart-date-range" id="questionsDateRange" placeholder="dd/mm/aaaa - dd/mm/aaaa" readonly>
+                                        <div class="date-picker-modal" id="questionsDatePicker" style="display: none;">
+                                            <div class="date-picker-content">
+                                                <h4>Selecionar Período</h4>
+                                                <div class="date-inputs">
+                                                    <label>Data Inicial:</label>
+                                                    <input type="date" id="questionsStartDate">
+                                                    <label>Data Final:</label>
+                                                    <input type="date" id="questionsEndDate">
+                                                </div>
+                                                <div class="date-picker-actions">
+                                                    <button onclick="applyDateRange('questions')">Aplicar</button>
+                                                    <button onclick="closeDatePicker('questions')">Cancelar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <canvas id="questionsChart" width="400" height="200"></canvas>
+                        </div>
+                        <div class="chart-box2">
+                            <div class="chart-header">
+                                <h3>Taxa de Acertos</h3>
+                                <div class="chart-controls">
+                                    <select class="chart-select" id="accuracyMateria">
+                                        <option value="todas">Todas as Matérias</option>
+                                        <option value="matematica">Matemática</option>
+                                        <option value="portugues">Português</option>
+                                        <option value="historia">História</option>
+                                        <option value="geografia">Geografia</option>
+                                        <option value="ciencias">Ciências</option>
+                                    </select>
+                                    <div class="date-range-container">
+                                        <input type="text" class="chart-date-range" id="accuracyDateRange" placeholder="dd/mm/aaaa - dd/mm/aaaa" readonly>
+                                        <div class="date-picker-modal" id="accuracyDatePicker" style="display: none;">
+                                            <div class="date-picker-content">
+                                                <h4>Selecionar Período</h4>
+                                                <div class="date-inputs">
+                                                    <label>Data Inicial:</label>
+                                                    <input type="date" id="accuracyStartDate">
+                                                    <label>Data Final:</label>
+                                                    <input type="date" id="accuracyEndDate">
+                                                </div>
+                                                <div class="date-picker-actions">
+                                                    <button onclick="applyDateRange('accuracy')">Aplicar</button>
+                                                    <button onclick="closeDatePicker('accuracy')">Cancelar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <canvas id="accuracyChart" width="200" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Trello Agenda e Lista de Cadernos -->
+                    <div class="trello-and-notebooks-grid">
+                        <!-- Agenda Semanal Estilo Trello -->
+                        <div class="trello-agenda-wrapper">
+                            <h3>Agenda Semanal de Estudos</h3>
+                            <div class="agenda-wrapper">
+                                <div class="dia-coluna" data-dia="segunda">
+                                    <div class="dia-titulo">Segunda-feira</div>
+                                    <div class="tarefa-card" draggable="true">
+                                        <div class="tarefa-content">
+                                            <span class="tarefa-text">Matemática - Álgebra</span>
+                                            <div class="tarefa-check">
+                                                <i class='bx bx-check'></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tarefa-card" draggable="true">
+                                        <div class="tarefa-content">
+                                            <span class="tarefa-text">Português - Gramática</span>
+                                            <div class="tarefa-check">
+                                                <i class='bx bx-check'></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="add-card-btn" onclick="showAddCardModal('segunda')">
+                                        <i class='bx bx-plus'></i>
+                                        Adicionar um cartão
+                                    </button>
+                                </div>
+                                <div class="dia-coluna" data-dia="terca">
+                                    <div class="dia-titulo">Terça-feira</div>
+                                    <div class="tarefa-card" draggable="true">
+                                        <div class="tarefa-content">
+                                            <span class="tarefa-text">História - Brasil Colônia</span>
+                                            <div class="tarefa-check">
+                                                <i class='bx bx-check'></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="add-card-btn" onclick="showAddCardModal('terca')">
+                                        <i class='bx bx-plus'></i>
+                                        Adicionar um cartão
+                                    </button>
+                                </div>
+                                <div class="dia-coluna" data-dia="quarta">
+                                    <div class="dia-titulo">Quarta-feira</div>
+                                    <div class="tarefa-card" draggable="true">
+                                        <div class="tarefa-content">
+                                            <span class="tarefa-text">Geografia - Relevo</span>
+                                            <div class="tarefa-check">
+                                                <i class='bx bx-check'></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tarefa-card" draggable="true">
+                                        <div class="tarefa-content">
+                                            <span class="tarefa-text">Ciências - Física</span>
+                                            <div class="tarefa-check">
+                                                <i class='bx bx-check'></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="add-card-btn" onclick="showAddCardModal('quarta')">
+                                        <i class='bx bx-plus'></i>
+                                        Adicionar um cartão
+                                    </button>
+                                </div>
+                                <div class="dia-coluna" data-dia="quinta">
+                                    <div class="dia-titulo">Quinta-feira</div>
+                                    <div class="tarefa-card" draggable="true">
+                                        <div class="tarefa-content">
+                                            <span class="tarefa-text">Matemática - Geometria</span>
+                                            <div class="tarefa-check">
+                                                <i class='bx bx-check'></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="add-card-btn" onclick="showAddCardModal('quinta')">
+                                        <i class='bx bx-plus'></i>
+                                        Adicionar um cartão
+                                    </button>
+                                </div>
+                                <div class="dia-coluna" data-dia="sexta">
+                                    <div class="dia-titulo">Sexta-feira</div>
+                                    <div class="tarefa-card" draggable="true">
+                                        <div class="tarefa-content">
+                                            <span class="tarefa-text">Português - Literatura</span>
+                                            <div class="tarefa-check">
+                                                <i class='bx bx-check'></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tarefa-card" draggable="true">
+                                        <div class="tarefa-content">
+                                            <span class="tarefa-text">História - República</span>
+                                            <div class="tarefa-check">
+                                                <i class='bx bx-check'></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="add-card-btn" onclick="showAddCardModal('sexta')">
+                                        <i class='bx bx-plus'></i>
+                                        Adicionar um cartão
+                                    </button>
+                                </div>
+                                <div class="dia-coluna" data-dia="sabado">
+                                    <div class="dia-titulo">Sábado</div>
+                                    <div class="tarefa-card" draggable="true">
+                                        <div class="tarefa-content">
+                                            <span class="tarefa-text">Revisão Geral</span>
+                                            <div class="tarefa-check">
+                                                <i class='bx bx-check'></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="add-card-btn" onclick="showAddCardModal('sabado')">
+                                        <i class='bx bx-plus'></i>
+                                        Adicionar um cartão
+                                    </button>
+                                </div>
+                                <div class="dia-coluna" data-dia="domingo">
+                                    <div class="dia-titulo">Domingo</div>
+                                    <div class="tarefa-card" draggable="true">
+                                        <div class="tarefa-content">
+                                            <span class="tarefa-text">Descanso</span>
+                                            <div class="tarefa-check">
+                                                <i class='bx bx-check'></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="add-card-btn" onclick="showAddCardModal('domingo')">
+                                        <i class='bx bx-plus'></i>
+                                        Adicionar um cartão
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Cadernos -->
+                        <div class="progress-box">
+                            <h3>Cadernos de Estudos</h3>
+                            <button class="create-notebook-btn" onclick="createNotebook()">+ Novo Caderno</button>
+                            <div class="notebooks-list">
+                                <div class="notebook-card">
+                                    <div class="notebook-header">
+                                        <h4>Matemática Básica</h4>
+                                        <div class="notebook-actions">
+                                            <button onclick="toggleStar(this)" title="Favoritar">⭐</button>
+                                            <button onclick="renameNotebook(this)" title="Renomear">✏️</button>
+                                            <button onclick="deleteNotebook(this)" title="Excluir">🗑️</button>
+                                        </div>
+                                    </div>
+                                    <div class="notebook-stats">
+                                        <p>150 questões • Criado em 15/01/2024</p>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-correct" style="width: 60%;"></div>
+                                            <div class="progress-bar-incorrect" style="width: 25%;"></div>
+                                            <div class="progress-bar-unanswered" style="width: 15%;"></div>
+                                        </div>
+                                        <p><span style="color: #4CAF50;">60% corretas</span> • <span style="color: #f44336;">25% incorretas</span> • <span style="color: #999;">15% não feitas</span></p>
+                                    </div>
+                                    <button class="view-notebook-btn">VER CADERNO</button>
+                                </div>
+
+                                <div class="notebook-card">
+                                    <div class="notebook-header">
+                                        <h4>Português Avançado</h4>
+                                        <div class="notebook-actions">
+                                            <button onclick="toggleStar(this)" title="Favoritar">☆</button>
+                                            <button onclick="renameNotebook(this)" title="Renomear">✏️</button>
+                                            <button onclick="deleteNotebook(this)" title="Excluir">🗑️</button>
+                                        </div>
+                                    </div>
+                                    <div class="notebook-stats">
+                                        <p>200 questões • Criado em 10/01/2024</p>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-correct" style="width: 45%;"></div>
+                                            <div class="progress-bar-incorrect" style="width: 35%;"></div>
+                                            <div class="progress-bar-unanswered" style="width: 20%;"></div>
+                                        </div>
+                                        <p><span style="color: #4CAF50;">45% corretas</span> • <span style="color: #f44336;">35% incorretas</span> • <span style="color: #999;">20% não feitas</span></p>
+                                    </div>
+                                    <button class="view-notebook-btn">VER CADERNO</button>
+                                </div>
+
+                                <div class="notebook-card">
+                                    <div class="notebook-header">
+                                        <h4>História do Brasil</h4>
+                                        <div class="notebook-actions">
+                                            <button onclick="toggleStar(this)" title="Favoritar">⭐</button>
+                                            <button onclick="renameNotebook(this)" title="Renomear">✏️</button>
+                                            <button onclick="deleteNotebook(this)" title="Excluir">🗑️</button>
+                                        </div>
+                                    </div>
+                                    <div class="notebook-stats">
+                                        <p>100 questões • Criado em 05/01/2024</p>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-correct" style="width: 70%;"></div>
+                                            <div class="progress-bar-incorrect" style="width: 20%;"></div>
+                                            <div class="progress-bar-unanswered" style="width: 10%;"></div>
+                                        </div>
+                                        <p><span style="color: #4CAF50;">70% corretas</span> • <span style="color: #f44336;">20% incorretas</span> • <span style="color: #999;">10% não feitas</span></p>
+                                    </div>
+                                    <button class="view-notebook-btn">VER CADERNO</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Page Content -->
+            <div id="search-page" class="page-content">
+                <div class="search-container">
+                    <h1>Buscar Questões</h1>
+                    <div class="search-input-group">
+                        <input type="text" id="searchInput" placeholder="Digite sua busca...">
+                        <button onclick="searchQuestions()">Buscar</button>
+                    </div>
+                    <div class="search-results">
+                        <p>Digite algo para buscar questões...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Page Content -->
+            <div id="chat-page" class="page-content">
+                <div class="chat-container">
+                    <h1>Chat com IA de Estudos</h1>
+                    <div class="chat-box" id="chatBox">
+                        <div class="message bot-message">
+                            Olá! Sou sua IA de estudos. Como posso ajudá-lo hoje?
+                        </div>
+                    </div>
+                    <div class="chat-input-group">
+                        <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
+                        <button onclick="sendMessage()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal para adicionar cartão -->
+    <div id="addCardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Adicionar Cartão</h3>
+                <span class="close" onclick="closeAddCardModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="cardTitle" placeholder="Insira um título ou cole um link">
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="addCard()">Adicionar Cartão</button>
+                    <button class="btn-secondary" onclick="closeAddCardModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div id="menuContexto" class="menu-contexto" style="display: none;">
+        <div class="menu-item" onclick="editarTarefa()">
+            <i class='bx bx-edit'></i>
+            Editar
+        </div>
+        <div class="menu-item" onclick="mudarCor()">
+            <i class='bx bx-palette'></i>
+            Cor
+        </div>
+        <div class="menu-item" onclick="excluirTarefa()">
+            <i class='bx bx-trash'></i>
+            Excluir
+        </div>
+    </div>
+
+    <!-- Paleta de Cores -->
+    <div id="paletaCores" class="paleta-cores" style="display: none;">
+        <div class="opcao-cor" data-cor="#4caf50" style="background: #4caf50;"></div>
+        <div class="opcao-cor" data-cor="#2196f3" style="background: #2196f3;"></div>
+        <div class="opcao-cor" data-cor="#ff9800" style="background: #ff9800;"></div>
+        <div class="opcao-cor" data-cor="#f44336" style="background: #f44336;"></div>
+        <div class="opcao-cor" data-cor="#9c27b0" style="background: #9c27b0;"></div>
+        <div class="opcao-cor" data-cor="#607d8b" style="background: #607d8b;"></div>
+        <button onclick="aplicarCor()">Aplicar</button>
+    </div>
+
+    <!-- Modal de Nota -->
+    <div id="modalNota" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Tarefa</h3>
+                <span class="close" onclick="fecharModalNota()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <textarea id="textoNota" placeholder="Digite o texto da tarefa..."></textarea>
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="salvarNota()">Salvar</button>
+                    <button class="btn-secondary" onclick="fecharModalNota()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+
+    <footer style="background-color: #1a1a1a; color: #fff; padding: 60px 20px; margin-top: 4px;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px;">
+            <!-- Seção Sobre -->
+            <div style="flex: 1; min-width: 250px;">
+                <h3 style="font-size: 20px; margin-bottom: 20px; color: #fff; font-weight: 600;">Sobre Nós</h3>
+                <p style="font-size: 14px; line-height: 1.8; color: #b3b3b3;">
+                    O Master-Quest é uma plataforma dedicada a ajudar estudantes a alcançarem seus objetivos acadêmicos através de questões, simulados e ferramentas de estudo.
+                </p>
+            </div>
+    
+            
+    
+            <!-- Contato -->
+            <div style="flex: 1; min-width: 250px;">
+                <h3 style="font-size: 20px; margin-bottom: 20px; color: #fff; font-weight: 600;">Contato</h3>
+                <p style="font-size: 14px; line-height: 1.8; color: #b3b3b3;">
+                    Email: suporte@masterquest.com<br>
+                    Telefone: (11) 1234-5678<br>
+                    Endereço: Rua Exemplo, 123 - São Paulo, SP
+                </p>
+            </div>
+    
+            <!-- Redes Sociais -->
+            <div style="flex: 1; min-width: 250px;">
+                <h3 style="font-size: 20px; margin-bottom: 20px; color: #fff; font-weight: 600;">Redes Sociais</h3>
+                <div style="display: flex; gap: 15px;">
+                    <a href="#" style="color: #b3b3b3; text-decoration: none; font-size: 24px; transition: color 0.3s;"><i class='bx bxl-facebook'></i></a>
+                    <a href="#" style="color: #b3b3b3; text-decoration: none; font-size: 24px; transition: color 0.3s;"><i class='bx bxl-twitter'></i></a>
+                    <a href="#" style="color: #b3b3b3; text-decoration: none; font-size: 24px; transition: color 0.3s;"><i class='bx bxl-instagram'></i></a>
+                    <a href="#" style="color: #b3b3b3; text-decoration: none; font-size: 24px; transition: color 0.3s;"><i class='bx bxl-linkedin'></i></a>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Direitos Autorais -->
+        <div style="text-align: center; margin-top: 60px; border-top: 1px solid #333; padding-top: 30px;">
+            <p style="margin: 0; font-size: 14px; color: #b3b3b3;">
+                &copy; 2023 Master-Quest. Todos os direitos reservados.
+            </p>
+            <p style="margin: 10px 0 0; font-size: 12px; color: #b3b3b3;">
+                Desenvolvido por Rian Araujo Ramos Rocha
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
+
